@@ -36,7 +36,7 @@ spec:
                       REDIS_PASSWORD: <path:cloud/data/test#redis_password>
           - name: VAULT_SKIP_VERIFY
             value: "true"
-    - path: "homerun-applications/homerun-base-stack/"
+    - path: "homerun-applications"
       repoURL: 'https://github.com/andre-ebert-sva/test-argo.git'
       targetRevision: HEAD
       directory:

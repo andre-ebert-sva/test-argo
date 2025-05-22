@@ -177,7 +177,7 @@ spec:
                           info: was build
           - name: VAULT_SKIP_VERIFY
             value: "true"
-    - path: "homerun-applications/homerun-demo-stack/"
+    - path: "homerun-applications"
       repoURL: 'https://github.com/andre-ebert-sva/test-argo.git'
       targetRevision: HEAD
       directory:
