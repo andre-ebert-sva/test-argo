@@ -9,81 +9,77 @@ spec:
     namespace: homerun
     server: https://10.31.103.50:32468
   sources:
-    - path: ''
-      repoURL: ghcr.io
-      targetRevision: v0.6.0
-      chart: stuttgart-things/homerun
-      plugin:
-        name: argocd-vault-plugin-helm
-        env:
-          - name: HELM_VALUES
-            value: |
-              generic-pitcher:
-                enabled: true
-                configmaps:
-                  homerun-generic-pitcher:
-                    API_PATH: generic
-                    PORT: "4000"
-                    REDIS_STREAM: homerun
-                    REDISEARCH_INDEX: homerun
-                secrets:
-                  generic-token:
-                    name: generic-token
+    path: ''
+    repoURL: ghcr.io
+    targetRevision: v0.6.0
+    chart: stuttgart-things/homerun
+    plugin:
+      name: argocd-vault-plugin-helm
+      env:
+        - name: HELM_VALUES
+          value: |
+            generic-pitcher:
+              enabled: true
+              configmaps:
+                homerun-generic-pitcher:
+                  API_PATH: generic
+                  PORT: "4000"
+                  REDIS_STREAM: homerun
+                  REDISEARCH_INDEX: homerun
+              secrets:
+                generic-token:
+                  name: generic-token
+                  labels:
+                    app: homerun-generic-pitcher
+                  dataType: stringData
+                  secretKVs:
+                    WEBHOOK_TOKEN: <path:cloud/data/test#homerun_generic_token>
+                redis-connection-homerun-generic-pitcher:
+                  name: redis-connection-homerun-generic-pitcher
+                  labels:
+                    app: homerun-generic-pitcher
+                  dataType: stringData
+                  secretKVs:
+                    REDIS_SERVER: homerun-redis-stack-newyork-headless.homerun.svc.cluster.local
+                    REDIS_PORT: 6379
+                    REDIS_PASSWORD: <path:cloud/data/test#redis_password>
+              customresources:
+                homerun-generic-pitcher-certificate:
+                  apiVersion: cert-manager.io/v1
+                  kind: Certificate
+                  metadata:
+                    name: homerun-generic-pitcher-ingress
                     labels:
                       app: homerun-generic-pitcher
-                    dataType: stringData
-                    secretKVs:
-                      WEBHOOK_TOKEN: <path:cloud/data/test#homerun_generic_token>
-                  redis-connection-homerun-generic-pitcher:
-                    name: redis-connection-homerun-generic-pitcher
-                    labels:
-                      app: homerun-generic-pitcher
-                    dataType: stringData
-                    secretKVs:
-                      REDIS_SERVER: homerun-redis-stack-newyork-headless.homerun.svc.cluster.local
-                      REDIS_PORT: 6379
-                      REDIS_PASSWORD: <path:cloud/data/test#redis_password>
-                customresources:
-                  homerun-generic-pitcher-certificate:
-                    apiVersion: cert-manager.io/v1
-                    kind: Certificate
-                    metadata:
-                      name: homerun-generic-pitcher-ingress
-                      labels:
-                        app: homerun-generic-pitcher
-                    spec:
-                      commonName: andre-rahul-blog-test-kind-2.labul.sva.de
-                      dnsNames:
-                        - andre-rahul-blog-test-kind-2.labul.sva.de
-                      issuerRef:
-                        name: ca-issuer
-                        kind: ClusterIssuer
-                      secretName: homerun-generic-pitcher-ingress-tls
-                ingress:
-                  homerun-generic-pitcher-ingress:
-                    labels:
-                      app: homerun-generic-pitcher
-                    name: homerun-generic-pitcher
-                    ingressClassName: nginx
-                    annotations:
-                      nginx.ingress.kubernetes.io/ssl-redirect: "true"
-                    service:
-                      name: homerun-generic-pitcher-service
-                      port: 80
-                      path: /generic
-                      pathType: Prefix
-                    hostname: andre-rahul-blog-test-kind-2
-                    domain: labul.sva.de
-                    tls:
-                      secretName: homerun-generic-pitcher-ingress-tls
-                      host: andre-rahul-blog-test-kind-2.labul.sva.de
-          - name: VAULT_SKIP_VERIFY
-            value: "true"
-    - path: "homerun-applications"
-      repoURL: 'https://github.com/andre-ebert-sva/test-argo.git'
-      targetRevision: HEAD
-      directory:
-        recurse: true
+                  spec:
+                    commonName: andre-rahul-blog-test-kind-2.labul.sva.de
+                    dnsNames:
+                      - andre-rahul-blog-test-kind-2.labul.sva.de
+                    issuerRef:
+                      name: ca-issuer
+                      kind: ClusterIssuer
+                    secretName: homerun-generic-pitcher-ingress-tls
+              ingress:
+                homerun-generic-pitcher-ingress:
+                  labels:
+                    app: homerun-generic-pitcher
+                  name: homerun-generic-pitcher
+                  ingressClassName: nginx
+                  annotations:
+                    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+                  service:
+                    name: homerun-generic-pitcher-service
+                    port: 80
+                    path: /generic
+                    pathType: Prefix
+                  hostname: andre-rahul-blog-test-kind-2
+                  domain: labul.sva.de
+                  tls:
+                    secretName: homerun-generic-pitcher-ingress-tls
+                    host: andre-rahul-blog-test-kind-2.labul.sva.de
+        - name: VAULT_SKIP_VERIFY
+          value: "true"
+  sources: []
   project: newyork
   syncPolicy:
     syncOptions:
