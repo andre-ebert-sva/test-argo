@@ -8,39 +8,35 @@ spec:
     name: ''
     namespace: homerun
     server: https://10.31.103.50:32468
-  sources:
-    - path: ''
-      repoURL: ghcr.io
-      targetRevision: v0.6.0
-      chart: stuttgart-things/homerun
-      plugin:
-        name: argocd-vault-plugin-helm
-        env:
-          - name: HELM_VALUES
-            value: |
-              text-catcher:
-                enabled: true
-                configmaps:
-                  homerun-text-catcher:
-                    REDIS_STREAM: homerun
-                    LOGGING: terminal
-                secrets:
-                  redis-connection-homerun-text-catcher:
-                    name: redis-connection-homerun-text-catcher
-                    labels:
-                      app: homerun-text-catcher
-                    dataType: stringData
-                    secretKVs:
-                      REDIS_SERVER: homerun-redis-stack-newyork-headless.homerun.svc.cluster.local
-                      REDIS_PORT: 6379
-                      REDIS_PASSWORD: <path:cloud/data/test#redis_password>
-          - name: VAULT_SKIP_VERIFY
-            value: "true"
-    - path: "homerun-applications"
-      repoURL: 'https://github.com/andre-ebert-sva/test-argo.git'
-      targetRevision: HEAD
-      directory:
-        recurse: true
+  source:
+    path: ''
+    repoURL: ghcr.io
+    targetRevision: v0.6.0
+    chart: stuttgart-things/homerun
+    plugin:
+      name: argocd-vault-plugin-helm
+      env:
+        - name: HELM_VALUES
+          value: |
+            text-catcher:
+              enabled: true
+              configmaps:
+                homerun-text-catcher:
+                  REDIS_STREAM: homerun
+                  LOGGING: terminal
+              secrets:
+                redis-connection-homerun-text-catcher:
+                  name: redis-connection-homerun-text-catcher
+                  labels:
+                    app: homerun-text-catcher
+                  dataType: stringData
+                  secretKVs:
+                    REDIS_SERVER: homerun-redis-stack-newyork-headless.homerun.svc.cluster.local
+                    REDIS_PORT: 6379
+                    REDIS_PASSWORD: <path:cloud/data/test#redis_password>
+        - name: VAULT_SKIP_VERIFY
+          value: "true"
+  sources: []
   project: newyork
   syncPolicy:
     syncOptions:

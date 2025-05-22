@@ -9,179 +9,175 @@ spec:
     namespace: homerun
     server: https://10.31.103.50:32468
   sources:
-    - path: ''
-      repoURL: ghcr.io
-      targetRevision: v0.6.0
-      chart: stuttgart-things/homerun
-      plugin:
-        name: argocd-vault-plugin-helm
-        env:
-          - name: HELM_VALUES
-            value: |
-              demo-pitcher:
-                enabled: true
-                deployment:
-                  volumes:
-                    event-config:
-                      volumeKind: configMap
-                  containers:
-                    homerun-demo-pitcher:
-                      volumeMounts:
-                        event-config:
-                          mountPath: /homerun/
-                          volumeKind: emptyDir
-                secrets:
-                  redis-connection-homerun-demo-pitcher:
-                    name: redis-connection-homerun-demo-pitcher
-                    labels:
-                      app: homerun-demo-pitcher
-                    dataType: stringData
-                    secretKVs:
-                      REDIS_SERVER: homerun-redis-stack-newyork-headless.homerun.svc.cluster.local
-                      REDIS_PORT: 6379
-                      REDIS_PASSWORD: <path:cloud/data/test#redis_password>
-                configmaps:
-                  homerun-demo-pitcher:
-                    REDIS_STREAM: homerun
-                    COUNT_JOBS: "15"
-                    INTERVAL_IN_SECONDS: "500"
-                    PATH_TO_CONFIG: homerun/event-templates.yaml
-                    OUTPUT: redis
+    path: ''
+    repoURL: ghcr.io
+    targetRevision: v0.6.0
+    chart: stuttgart-things/homerun
+    plugin:
+      name: argocd-vault-plugin-helm
+      env:
+        - name: HELM_VALUES
+          value: |
+            demo-pitcher:
+              enabled: true
+              deployment:
+                volumes:
                   event-config:
-                    event-templates.yaml: |
-                      ---
-                      systems:
-                        - github
-                        - gitlab
+                    volumeKind: configMap
+                containers:
+                  homerun-demo-pitcher:
+                    volumeMounts:
+                      event-config:
+                        mountPath: /homerun/
+                        volumeKind: emptyDir
+              secrets:
+                redis-connection-homerun-demo-pitcher:
+                  name: redis-connection-homerun-demo-pitcher
+                  labels:
+                    app: homerun-demo-pitcher
+                  dataType: stringData
+                  secretKVs:
+                    REDIS_SERVER: homerun-redis-stack-newyork-headless.homerun.svc.cluster.local
+                    REDIS_PORT: 6379
+                    REDIS_PASSWORD: <path:cloud/data/test#redis_password>
+              configmaps:
+                homerun-demo-pitcher:
+                  REDIS_STREAM: homerun
+                  COUNT_JOBS: "15"
+                  INTERVAL_IN_SECONDS: "500"
+                  PATH_TO_CONFIG: homerun/event-templates.yaml
+                  OUTPUT: redis
+                event-config:
+                  event-templates.yaml: |
+                    ---
+                    systems:
+                      - github
+                      - gitlab
+                      - ansible
+                    severity:
+                      - INFO
+                      - FAILED
+                      - SUCCESS
+                    authors: # pick author first and then randomly pick a assignee
+                      - sina
+                      - patrick
+                      - quolf
+                      - gude
+                      - andreu
+                      - ana
+                    author:
+                      sina:
+                        name: Schlatter, Sina
+                        email: sschlatter@sva.de
+                      patrick:
+                        name: Hermann, Patrick
+                        email: phermann@sva.de
+                    templates:
+                      github:
+                        eventTypes: git
+                      gitlab:
+                        eventTypes: git
+                      ansible:
+                        eventTypes: iac
+                    events:
+                      git:
+                        title: |
+                          [[ .objectType ]] [[ .objectName ]] [[ .status ]]
+                        message: |
+                          [[ .objectType ]] [[ .objectName ]] [[ .status ]] on [[ .system ]] at [[ .timestamp ]] triggered by [[ .author ]]
+                    objectTypes:
+                      git:
+                        - pipeline
+                        - repository
+                      iac:
+                        - playbook
+                        - role
+                        - collection
+                    objectNames:
+                      repository:
+                        - homerun
+                        - homerun-demo-pitcher
+                        - homerun-demo-catcher
+                      pipeline:
+                        - build-kaniko-image
+                        - publish-helm-chart
+                      playbook:
+                        - create-vm.yaml
+                      role:
+                        - deploy-configure-rke
+                      collection:
+                        - sthings.deploy_rke
+                        - sthings.base_os
+                        - sthings.container
+                    tags:
+                      sthings.deploy_rke:
+                        - rke
+                        - deploy
                         - ansible
-                      severity:
-                        - INFO
-                        - FAILED
-                        - SUCCESS
-                      authors: # pick author first and then randomly pick a assignee
-                        - sina
-                        - patrick
-                        - quolf
-                        - gude
-                        - andreu
-                        - ana
-                      author:
-                        sina:
-                          name: Schlatter, Sina
-                          email: sschlatter@sva.de
-                        patrick:
-                          name: Hermann, Patrick
-                          email: phermann@sva.de
-                      templates:
-                        github:
-                          eventTypes: git
-                        gitlab:
-                          eventTypes: git
-                        ansible:
-                          eventTypes: iac
-                      events:
-                        git:
-                          title: |
-                            [[ .objectType ]] [[ .objectName ]] [[ .status ]]
-                          message: |
-                            [[ .objectType ]] [[ .objectName ]] [[ .status ]] on [[ .system ]] at [[ .timestamp ]] triggered by [[ .author ]]
-                      objectTypes:
-                        git:
-                          - pipeline
-                          - repository
-                        iac:
-                          - playbook
-                          - role
-                          - collection
-                      objectNames:
-                        repository:
-                          - homerun
-                          - homerun-demo-pitcher
-                          - homerun-demo-catcher
-                        pipeline:
-                          - build-kaniko-image
-                          - publish-helm-chart
-                        playbook:
-                          - create-vm.yaml
-                        role:
-                          - deploy-configure-rke
-                        collection:
-                          - sthings.deploy_rke
-                          - sthings.base_os
-                          - sthings.container
-                      tags:
-                        sthings.deploy_rke:
-                          - rke
-                          - deploy
-                          - ansible
-                          - collection
-                          - demo
-                        sthings.base_os:
-                          - base
-                          - ansible
-                          - collection
-                          - demo
-                        sthings.container:
-                          - container
-                          - collection
-                          - demo
-                          - ansible
-                        build-kaniko-image:
-                          - kaniko
-                          - build
-                          - image
-                          - demo
-                        create-vm.yaml:
-                          - vm
-                          - create
-                          - playbook
-                          - demo
-                        deploy-configure-rke:
-                          - rke
-                          - deploy
-                          - configure
-                          - role
-                          - demo
-                        publish-helm-chart:
-                          - helm
-                          - publish
-                          - chart
-                          - demo
-                        homerun:
-                          - homerun
-                          - demo
-                        homerun-demo-pitcher:
-                          - homerun
-                          - demo
-                          - pitcher
-                        homerun-demo-catcher:
-                          - homerun
-                          - demo
-                          - catcher
-                      status:
-                        pipeline:
-                          failed: did fail
-                          success: did run successfully
-                          info: did run
-                        playbook:
-                          failed: did fail
-                          success: did run successfully
-                          info: did run
-                        repository:
-                          failed: was not created
-                          success: was created successfully
-                          info: was created
-                        collection:
-                          failed: was not build
-                          success: was build successfully
-                          info: was build
-          - name: VAULT_SKIP_VERIFY
-            value: "true"
-    - path: "homerun-applications"
-      repoURL: 'https://github.com/andre-ebert-sva/test-argo.git'
-      targetRevision: HEAD
-      directory:
-        recurse: true
+                        - collection
+                        - demo
+                      sthings.base_os:
+                        - base
+                        - ansible
+                        - collection
+                        - demo
+                      sthings.container:
+                        - container
+                        - collection
+                        - demo
+                        - ansible
+                      build-kaniko-image:
+                        - kaniko
+                        - build
+                        - image
+                        - demo
+                      create-vm.yaml:
+                        - vm
+                        - create
+                        - playbook
+                        - demo
+                      deploy-configure-rke:
+                        - rke
+                        - deploy
+                        - configure
+                        - role
+                        - demo
+                      publish-helm-chart:
+                        - helm
+                        - publish
+                        - chart
+                        - demo
+                      homerun:
+                        - homerun
+                        - demo
+                      homerun-demo-pitcher:
+                        - homerun
+                        - demo
+                        - pitcher
+                      homerun-demo-catcher:
+                        - homerun
+                        - demo
+                        - catcher
+                    status:
+                      pipeline:
+                        failed: did fail
+                        success: did run successfully
+                        info: did run
+                      playbook:
+                        failed: did fail
+                        success: did run successfully
+                        info: did run
+                      repository:
+                        failed: was not created
+                        success: was created successfully
+                        info: was created
+                      collection:
+                        failed: was not build
+                        success: was build successfully
+                        info: was build
+        - name: VAULT_SKIP_VERIFY
+          value: "true"
+  sources: []
   project: newyork
   syncPolicy:
     syncOptions:

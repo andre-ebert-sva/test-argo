@@ -9,43 +9,39 @@ spec:
     namespace: homerun
     server: https://10.31.103.50:32468
   sources:
-    - path: ''
-      repoURL: ghcr.io
-      targetRevision: v0.6.0
-      chart: stuttgart-things/homerun
-      plugin:
-        name: argocd-vault-plugin-helm
-        env:
-          - name: HELM_VALUES
-            value: |
-              redis-stack:
-                enabled: true
-                sentinel:
-                  service:
-                    type: ClusterIP
-                enabled: true
-                global:
-                  redis:
-                    password: <path:cloud/data/test#redis_password>
-                master:
-                  service:
-                    type: ClusterIP
-                  persistence:
-                    enabled: true
-                    storageClass: local-path
-                    size: 4Gi
-                replica:
-                  persistence:
-                    enabled: false
-                    storageClass: local-path
-                    size: 4Gi
-          - name: VAULT_SKIP_VERIFY
-            value: "true"
-    - path: "homerun-applications"
-      repoURL: 'https://github.com/andre-ebert-sva/test-argo.git'
-      targetRevision: HEAD
-      directory:
-        recurse: true
+    path: ''
+    repoURL: ghcr.io
+    targetRevision: v0.6.0
+    chart: stuttgart-things/homerun
+    plugin:
+      name: argocd-vault-plugin-helm
+      env:
+        - name: HELM_VALUES
+          value: |
+            redis-stack:
+              enabled: true
+              sentinel:
+                service:
+                  type: ClusterIP
+              enabled: true
+              global:
+                redis:
+                  password: <path:cloud/data/test#redis_password>
+              master:
+                service:
+                  type: ClusterIP
+                persistence:
+                  enabled: true
+                  storageClass: local-path
+                  size: 4Gi
+              replica:
+                persistence:
+                  enabled: false
+                  storageClass: local-path
+                  size: 4Gi
+        - name: VAULT_SKIP_VERIFY
+          value: "true"
+  sources: []
   project: newyork
   syncPolicy:
     syncOptions:
