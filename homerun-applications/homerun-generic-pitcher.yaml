@@ -8,7 +8,7 @@ spec:
     name: ''
     namespace: homerun
     server: https://10.31.103.50:32468
-  sources:
+  source:
     path: ''
     repoURL: ghcr.io
     targetRevision: v0.6.0
